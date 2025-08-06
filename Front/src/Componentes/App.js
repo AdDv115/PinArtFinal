@@ -3,48 +3,33 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Aside from './Aside';
 import Perfil from '../Paginas/ContPerfil';
 import Admin from '../Paginas/Admin';
+import Carrito from './Carrito';
 import Inicio from '../Paginas/Inicio';
 import Pago from '../Componentes/pago'
 
 export default function App() {
   const [cartItems, setCartItems] = useState([]);
+  const [showCartModal, setShowCartModal] = useState(false);
 
   const addToCart = (obra) => {
-    const existe = cartItems.find(item => item.name === obra.name);
-    if (existe) {
-      const actualizado = cartItems.map(item =>
-        item.name === obra.name
-          ? { ...item, cantidad: item.cantidad + 1 }
-          : item
-      );
-      setCartItems(actualizado);
-    } else {
-      setCartItems([...cartItems, { ...obra, cantidad: 1 }]);
-    }
+    setCartItems(prev => [...prev, obra]);
+    setShowCartModal(true);
   };
-
-  const eliminarDelCarrito = (index) => {
-    const nuevosItems = [...cartItems];
-    nuevosItems.splice(index, 1);
-    setCartItems(nuevosItems);
-  };
-
 
   return (
     <BrowserRouter>
-      <Aside
-        cartItems={cartItems}
-        setCartItems={setCartItems}
-        eliminarDelCarrito={eliminarDelCarrito}
-      />
-
+      <Aside />
       <Routes>
       <Route path="/" element={<Inicio addToCart={addToCart} />} />       
         <Route path="/perfil" element={<Perfil addToCart={addToCart} />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/pago" element={<Pago />} />
       </Routes>
-      
+      <Carrito
+        showCartModal={showCartModal}
+        setShowCartModal={setShowCartModal}
+        cartItems={cartItems}
+      />
     </BrowserRouter>
   );
 }
